@@ -1,4 +1,4 @@
- 
+
 # Fetching the latest node image on alpine linux
 FROM node:alpine AS development
 
@@ -18,3 +18,16 @@ COPY . .
 
 # Starting our application
 CMD ["yarn","start"]
+
+
+FROM development AS test
+RUN yarn test
+
+# Production stage
+FROM node:alpine AS prod
+ENV NODE_ENV production
+WORKDIR /my-app
+COPY ./package*.json /my-app
+RUN yarn install --production
+COPY . .
+CMD ["yarn", "start"]
